@@ -1,3 +1,13 @@
+### todos
+
+- check correctness
+
+### back o envelope
+
+ls /Volumes/bigone/bills/mdenny_copy_early2015/bills/POS_Tagged_Bills/ | wc -l
+
+99272
+
 ### From Brendan meeting. 10-7
 
 - each rolling window is a document. what is jaccard overlap?
@@ -14,3 +24,4 @@
   - See Norvig/Jurafsky. Spelling correction. norvig's spelling corrector
   - text chunks.
   - model deletion probabilities
+
