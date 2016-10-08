@@ -99,6 +99,6 @@ def do_doc():
     logging.debug("{}\t{}\tran permute".format(datetime.datetime.utcnow(), args.fn))
 
 
-
-profile.run('do_doc()')
+do_doc()
+# profile.run('do_doc()')
 
