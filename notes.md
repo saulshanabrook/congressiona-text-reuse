@@ -1,6 +1,7 @@
 ### todos
 
 - check correctness w/ jaccard
+- it is too low. remember you changed up the permute function to go faster...
 
 ### back o envelope
 
