@@ -1,6 +1,6 @@
 ### todos
 
-- check correctness
+- check correctness w/ jaccard
 
 ### back o envelope
 
