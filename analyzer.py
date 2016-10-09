@@ -15,11 +15,22 @@ ITERS = 0
 # ye olde logical document
 D_i = collections.namedtuple('D_i', 'fn windowno')
 
+
 def delete_old_stuff():
-    try:
-        os.remove("congress.control_c.candidates")
-    except OSError:
-        pass
+    '''delete old files'''
+    def delete(d):
+        try:
+            os.remove(d)
+        except OSError:
+            pass
+
+    to_delete = ["shingles.congress.filtered",
+                "congress.control_c.candidates",
+                "shingles.congress.filtered_twice"]
+
+    for item in to_delete:
+        delete(item)
+
 
 def make_interesting_digits():
     '''make a list of digits to investigate further'''
@@ -46,10 +57,7 @@ def make_investigate_more_list():
 def make_filtered_file(interesting_digits):
     '''make a filtered file'''
     global ITERS
-    try:
-        os.remove("shingles.congress.filtered")
-    except OSError:
-        pass
+
     with open("shingles.congress", "r") as inf:
         for rw in inf:
             biys = rw.replace("\n", "").split(",")
@@ -78,7 +86,23 @@ def record_pairs(candidates):
                                                 two.fn,
                                                 two.windowno))
 
+def filter_again():
+    candidates = [c.replace("\n", "") for c in
+                 open("congress.control_c.candidates", "r")]
 
+    def include(fn_, window_):
+        for c in candidates:
+            if fn_ in c and window_ in c:
+                return True
+        return False
+
+    with open("shingles.congress.filtered", "r") as inf:
+        for rw in inf:
+            biys = rw.replace("\n", "").split(",")
+            fn, digit, window, window_size, iter_ = biys
+            if include(fn, window):
+                with open("shingles.congress.filtered_twice", "a") as outf:
+                    outf.write(rw)
 
 def find_non_trivial_jac_overlap():
     '''loop over a file. ASSUME filtered by digit, aka x^pi_i'''
@@ -99,9 +123,15 @@ def find_non_trivial_jac_overlap():
 
 def main():
     '''just main method'''
+    print "[*]delete old stuff"
     delete_old_stuff()
+    print "[*]find interesting digits"
     digits = make_investigate_more_list()
+    print "[*]filter out uninteresting digits"
     make_filtered_file(digits)
+    print "[*]find non trivial jac overlaps"
     find_non_trivial_jac_overlap()
+    print "[*]filter out anything that is not a candidate"
+    filter_again()
 
 main()
