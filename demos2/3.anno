@@ -1,0 +1,1 @@
+{"sentences": [{"tokens": ["the", "Patient", "Protection", "and", "Affordable", "Care", "Act", "of", "2010"], "lemmas": ["the", "Patient", "Protection", "and", "Affordable", "Care", "Act", "of", "2010"], "pos": ["DT", "NNP", "NNP", "CC", "NNP", "NNP", "NNP", "IN", "CD"], "char_offsets": [[0, 3], [4, 11], [12, 22], [23, 26], [27, 37], [38, 42], [43, 46], [47, 49], [50, 54]]}]}
