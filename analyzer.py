@@ -26,7 +26,8 @@ def delete_old_stuff():
 
     to_delete = ["shingles.congress.filtered",
                 "congress.control_c.candidates",
-                "shingles.congress.filtered_twice"]
+                "shingles.congress.filtered_twice",
+                "jaccards"]
 
     for item in to_delete:
         delete(item)
@@ -104,6 +105,7 @@ def filter_again():
                 with open("shingles.congress.filtered_twice", "a") as outf:
                     outf.write(rw)
 
+
 def find_non_trivial_jac_overlap():
     '''loop over a file. ASSUME filtered by digit, aka x^pi_i'''
     x_i_pi = None  # digit in question
@@ -121,6 +123,37 @@ def find_non_trivial_jac_overlap():
             candidate_pairs.append(d_i)
 
 
+def brute_force_it():
+    '''loop over a file. ASSUME filtered by digit, aka x^pi_i'''
+    x_i_pi = None  # digit in question
+    candidate_pairs = []
+    candidates = [c.replace("\n", "") for c in
+                 open("congress.control_c.candidates", "r")]
+    global ITERS
+    lenc = len(candidates)
+    for c_no, c in enumerate(candidates):
+        if c_no % 100 == 0:
+            print c_no, lenc 
+        c1, c2 = c.split(",")
+        fn, window = c1.split("-")
+        c1 = D_i(fn=fn, windowno=window)
+        fn, window = c2.split("-")
+        c2 = D_i(fn=fn, windowno=window)
+        c1s = []
+        c2s = []
+        with open("shingles.congress.filtered", "r") as inf:
+            for rw in inf:
+                biys = rw.replace("\n", "").split(",")
+                fn, digit, window, window_size, iter_ = biys
+                if fn == c1.fn and window == c1.fn:
+                    c1s.append(digit)
+                if fn == c2.fn and window == c2.fn:
+                    c12.append(digit)
+        overlap = len(set(c1s).intersection(set(c2s)))
+        with open("jaccards", "a") as outf:
+            outf.write(c + "," + str(overlap))
+
+
 def main():
     '''just main method'''
     print "[*]delete old stuff"
@@ -131,7 +164,9 @@ def main():
     make_filtered_file(digits)
     print "[*]find non trivial jac overlaps"
     find_non_trivial_jac_overlap()
-    print "[*]filter out anything that is not a candidate"
-    filter_again()
+    #print "[*]filter out anything that is not a candidate"
+    #filter_again()
+    print "[*]brute force it"
+    brute_force_it()
 
 main()
