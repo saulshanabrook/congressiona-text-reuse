@@ -1,1 +1,1 @@
-{"sentences": [{"tokens": ["the", "cat", "on", "the", "fence"], "lemmas": ["the", "cat", "on", "the", "fence"], "pos": ["DT", "NN", "IN", "DT", "NN"], "char_offsets": [[0, 3], [4, 7], [8, 10], [11, 14], [15, 20]]}]}
+{"sentences": [{"tokens": ["dog", "cat", "on", "the", "fence"], "lemmas": ["dog", "cat", "on", "the", "fence"], "pos": ["NN", "NN", "IN", "DT", "NN"], "char_offsets": [[0, 3], [4, 7], [8, 10], [11, 14], [15, 20]]}]}

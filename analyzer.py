@@ -1,7 +1,5 @@
 '''
-many docs have lots of passages w/ high jac similarity.
-this makes a pass over the file and finds all digits that
-overlap across at least 1 file
+THIS IS DEAD CODE DELETE DELETE 10.9
 '''
 from __future__ import division
 from collections import defaultdict

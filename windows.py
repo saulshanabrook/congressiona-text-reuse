@@ -9,14 +9,17 @@ import profile
 
 import cPickle as pickle
 
-parser = argparse.ArgumentParser(description='')
-parser.add_argument('-size', action="store", dest="size", type=int)
-parser.add_argument('-fn', action="store", dest="fn")
-parser.add_argument('-iter', action="store", dest="iter")
-args = parser.parse_args()
-
 import logging
 logging.basicConfig(filename='windows.log', level=logging.DEBUG)
+
+def get_args():
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('-size', action="store", dest="size", type=int)
+    parser.add_argument('-fn', action="store", dest="fn")
+    parser.add_argument('-iter', action="store", dest="iter")
+    return parser.parse_args()
+
+args = get_args()
 
 HASHLEN = 32
 SHINGLESIZE = 2 # size of shingle, not window!
@@ -41,17 +44,20 @@ def get_tokens(fn):
 def permute(hashed, pi_):
     '''permute hashed and return a hex string'''
     assert len(hashed) == len(pi_)
-    out2 = [None] * HASHLEN
-    #out = ""
-    #for c_ in range(HASHLEN):
-    #    out += hashed[np.where(pi_ == c_)[0][0]]
+    out2 = [None] * HASHLEN # this could be a global var that keeps getting refilled
     
     for pno, p in enumerate(pi_):
-        out2[pno] = hashed[p]
+        out2[p] = hashed[pno]
+    
+    out2 = "".join(out2)
+    
+    # Old, slower method permute method that I know works below
+    #out = ""
+    #for c_ in range(HASHLEN):
+    #    out += hashed[np.where(pi_ == c_)[0][0]]    
     # assert out == out2
-    # import ipdb
-    # ipdb.set_trace()
-    return "0x" + "".join(out2)
+
+    return "0x" + out2
 
 
 def shingle(doc, size):
@@ -83,6 +89,21 @@ def shingle_hash_permute_min(doc, ngram_size):
     return int(min(pi_d_j), 16)
 
 
+# NO WINDOWS
+def do_doc_simpler():
+    '''
+    Bunch o stuff
+       - make windows
+       - shingle_hash_permute_min them
+       - report results to file
+    '''
+    doc = get_tokens(args.fn)
+    min_digit = shingle_hash_permute_min(doc, SHINGLESIZE)
+    with open(args.fn.split("/").pop() + ".debug", "a") as outf:
+        outf.write(str(min_digit) + "\n")
+    logging.debug("{}\t{}\tran permute".format(datetime.datetime.utcnow(), args.fn))
+
+
 def do_doc():
     '''
     Bunch o stuff
@@ -98,7 +119,10 @@ def do_doc():
             outf.write(out_str + "\n")
     logging.debug("{}\t{}\tran permute".format(datetime.datetime.utcnow(), args.fn))
 
+def get_window(fn, size, window_no):
+    ngrams = find_windows(get_tokens(fn), size)
+    return ngrams[window_no]
 
-do_doc()
+do_doc_simpler()
 # profile.run('do_doc()')
 

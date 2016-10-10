@@ -3,9 +3,17 @@
 rm shingles.congress # stores the shingles
 rm windows.log # stores the reports of the
 
-# declare -a arr=("/Volumes/bigone/bills/mdenny_copy_early2015/bills/POS_Tagged_Bills/bill91199.anno", "/Volumes/bigone/bills/mdenny_copy_early2015/bills/POS_Tagged_Bills/bill91198.anno")
+echo 'fn,digit,window_no,window_size,iter' > shingles.congress
 
-for item in /Volumes/bigone/bills/mdenny_copy_early2015/bills/POS_Tagged_Bills/bill9111*
+
+# for item in /Volumes/bigone/bills/mdenny_copy_early2015/bills/POS_Tagged_Bills/bill911*
+
+for (( c=1; c<=100; c++ ))
 do
-    python windows.py -fn "$item" -size 100
+    echo "$c"
+    python pi.py
+    for item in demos/*.anno
+    do
+        python windows.py -fn "$item" -window_size 5 -iter "$c"
+    done
 done
