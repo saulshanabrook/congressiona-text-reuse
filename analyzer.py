@@ -15,7 +15,6 @@ ITERS = 0
 # ye olde logical document
 D_i = collections.namedtuple('D_i', 'fn windowno')
 
-
 def delete_old_stuff():
     '''delete old files'''
     def delete(d):
@@ -27,7 +26,8 @@ def delete_old_stuff():
     to_delete = ["shingles.congress.filtered",
                 "congress.control_c.candidates",
                 "shingles.congress.filtered_twice",
-                "jaccards"]
+                "jaccards",
+                "shingles.congress.filtered.sorted"]
 
     for item in to_delete:
         delete(item)
@@ -57,101 +57,13 @@ def make_investigate_more_list():
 
 def make_filtered_file(interesting_digits):
     '''make a filtered file'''
-    global ITERS
-
     with open("shingles.congress", "r") as inf:
         for rw in inf:
             biys = rw.replace("\n", "").split(",")
             fn, digit, window, window_size, iter_ = biys
-            if iter_ > ITERS:
-                try:
-                    ITERS = int(iter_) # there is a header that is not int
-                except ValueError:
-                    pass
             if digit in interesting_digits:
                 with open("shingles.congress.filtered", "a") as outf:
                     outf.write(rw)
-
-
-def record_pairs(candidates):
-    '''
-    record all pairs
-    '''
-    counts = defaultdict(int)
-    for combo in itertools.combinations(candidates, 2):
-        one, two = combo
-        if one.fn != two.fn:
-            with open("congress.control_c.candidates", "a") as outf:
-                outf.write("{}-{},{}-{}\n".format(one.fn,
-                                                one.windowno,
-                                                two.fn,
-                                                two.windowno))
-
-def filter_again():
-    candidates = [c.replace("\n", "") for c in
-                 open("congress.control_c.candidates", "r")]
-
-    def include(fn_, window_):
-        for c in candidates:
-            if fn_ in c and window_ in c:
-                return True
-        return False
-
-    with open("shingles.congress.filtered", "r") as inf:
-        for rw in inf:
-            biys = rw.replace("\n", "").split(",")
-            fn, digit, window, window_size, iter_ = biys
-            if include(fn, window):
-                with open("shingles.congress.filtered_twice", "a") as outf:
-                    outf.write(rw)
-
-
-def find_non_trivial_jac_overlap():
-    '''loop over a file. ASSUME filtered by digit, aka x^pi_i'''
-    x_i_pi = None  # digit in question
-    candidate_pairs = []
-    with open("shingles.congress.filtered", "r") as inf:
-        for rw in inf:
-            biys = rw.replace("\n", "").split(",")
-            fn, digit, window, window_size, iter_ = biys
-            if digit != x_i_pi:
-                if x_i_pi is not None:
-                    record_pairs(candidate_pairs)
-                x_i_pi = digit
-                candidate_pairs = []
-            d_i = D_i(fn=fn, windowno=window)
-            candidate_pairs.append(d_i)
-
-
-def brute_force_it():
-    '''loop over a file. ASSUME filtered by digit, aka x^pi_i'''
-    x_i_pi = None  # digit in question
-    candidate_pairs = []
-    candidates = [c.replace("\n", "") for c in
-                 open("congress.control_c.candidates", "r")]
-    global ITERS
-    lenc = len(candidates)
-    for c_no, c in enumerate(candidates):
-        if c_no % 100 == 0:
-            print c_no, lenc 
-        c1, c2 = c.split(",")
-        fn, window = c1.split("-")
-        c1 = D_i(fn=fn, windowno=window)
-        fn, window = c2.split("-")
-        c2 = D_i(fn=fn, windowno=window)
-        c1s = []
-        c2s = []
-        with open("shingles.congress.filtered", "r") as inf:
-            for rw in inf:
-                biys = rw.replace("\n", "").split(",")
-                fn, digit, window, window_size, iter_ = biys
-                if fn == c1.fn and window == c1.fn:
-                    c1s.append(digit)
-                if fn == c2.fn and window == c2.fn:
-                    c12.append(digit)
-        overlap = len(set(c1s).intersection(set(c2s)))
-        with open("jaccards", "a") as outf:
-            outf.write(c + "," + str(overlap))
 
 
 def main():
@@ -162,11 +74,5 @@ def main():
     digits = make_investigate_more_list()
     print "[*]filter out uninteresting digits"
     make_filtered_file(digits)
-    print "[*]find non trivial jac overlaps"
-    find_non_trivial_jac_overlap()
-    #print "[*]filter out anything that is not a candidate"
-    #filter_again()
-    print "[*]brute force it"
-    brute_force_it()
 
 main()
