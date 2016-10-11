@@ -8,8 +8,10 @@
 
 echo "fn,digit,window_no,window_size,iter" > "shingles.congress"
 
+echo "[*] shingling"
+
 FILES="demos_congress/*anno"
-for (( c=1; c<=100; c++ ))
+for (( c=1; c<=2; c++ ))
 do
     for f in $FILES
     do
@@ -17,11 +19,16 @@ do
     done
 done
 
+echo "[*] sorting"
+
 LC_ALL=C sort -k2 -n -t"," shingles.congress > shingles.congress.sorted
 
+
+echo "[*] finding candidates"
 rm "shingles.congress.candidates"
 python analyzer2.py  # make the candidates
 
+echo "[*] finding jaccards"
 rm "shingles.congress.candidates.jacs"
 FILENAME="shingles.congress.candidates"
 cat $FILENAME | while read LINE
