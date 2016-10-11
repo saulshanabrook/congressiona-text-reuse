@@ -27,8 +27,13 @@ def get_stops():
 STOPS = get_stops()
 
 def make_windows(doc, n):
-    '''find all ngrams'''
-    return zip(*[doc[i:] for i in range(n)])
+    '''
+    - chunk into n token blocks (at least for now)
+    - no rolling windows. too big! something to improve later
+    '''
+    # https://gist.github.com/moshekaplan/4678925
+    for i in xrange(0, len(doc), n):
+        yield doc[i:i+n]
 
 def get_window(fn, size, window_no):
     ngrams = make_windows(get_tokens(fn), size)
@@ -93,12 +98,13 @@ def do_doc(fn, window_size, iter_no):
             outf.write(out_str + "\n")
     logging.debug("{}\t{}\tran permute".format(datetime.datetime.utcnow(), fn))
 
-import argparse
-parser = argparse.ArgumentParser(description='args')
-parser.add_argument('-iter')
-parser.add_argument('-doc')
-args = parser.parse_args()
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='args')
+    parser.add_argument('-iter')
+    parser.add_argument('-doc')
+    args = parser.parse_args()
 
-WINDOWSIZE = 50
+    WINDOWSIZE = 50
 
-do_doc(args.doc, WINDOWSIZE, args.iter)
+    do_doc(args.doc, WINDOWSIZE, args.iter)
