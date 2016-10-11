@@ -46,7 +46,7 @@ def find_jacs():
     with open("shingles.congress.sorted", "r") as inf:
         for rw in inf:
             counter += 1
-            if counter % 10000 == 0:
+            if counter % 1000 == 0:
                 sys.stderr.write("{}\t".format(counter))
             biys = rw.replace("\n", "")
             fn, digit, window, window_size, iter_ = biys.split(",")
