@@ -39,7 +39,7 @@ def process_digit(current_list):
                                               candidate.windowno2))
 
 
-def find_jacs():
+def find_candidates():
     current_digit = None
     current_list = []
     counter = 0
@@ -57,4 +57,6 @@ def find_jacs():
             current_list.append(biys)
     process_digit(current_list)
 
-find_jacs()
+
+if __name__ == '__main__':
+    find_candidates()

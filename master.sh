@@ -11,7 +11,7 @@ echo "fn,digit,window_no,window_size,iter" > "shingles.congress"
 echo "[*] shingling"
 
 FILES="demos_congress/*anno"
-for (( c=1; c<=100; c++ ))
+for (( c=1; c<=1000; c++ ))
 do
     python pi.py
     for f in $FILES
