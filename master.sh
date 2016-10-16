@@ -10,29 +10,27 @@ echo "fn,digit,window_no,window_size,iter" > "shingles.congress"
 
 echo "[*] shingling"
 
-FILES="demos_congress/*anno"
-for (( c=1; c<=1000; c++ ))
+#FILES="/data/bills/mdenny_copy_early2015/bills/*anno"
+#FILES="/data/bills/mdenny_copy_early2015/bills/POS_Tagged_Bills/*anno"
+for (( c=1; c<=10; c++ ))
 do
     python pi.py
-    for f in $FILES
-    do
-        python shingling.py -doc "$f" -iter "$c"
-    done
+    find /data/bills/mdenny_copy_early2015/bills/POS_Tagged_Bills/ -type f -name '*.anno' | parallel --eta -j20 python shingling.py -doc {} -iter "$c"
 done
 
 echo "[*] sorting"
 
-LC_ALL=C sort -k2 -n -t"," shingles.congress > shingles.congress.sorted
+# LC_ALL=C sort -k2 -n -t"," shingles.congress > shingles.congress.sorted
 
 
-echo "[*] finding candidates"
-rm "shingles.congress.candidates"
-python analyzer2.py  # make the candidates
+#echo "[*] finding candidates"
+#rm "shingles.congress.candidates"
+#python analyzer2.py  # make the candidates
 
-echo "[*] finding jaccards"
-rm "shingles.congress.candidates.jacs"
-FILENAME="shingles.congress.candidates"
-cat $FILENAME | while read LINE
-do
-   python check_candidate.py "$LINE"
-done
+#echo "[*] finding jaccards"
+#rm "shingles.congress.candidates.jacs"
+#FILENAME="shingles.congress.candidates"
+#cat $FILENAME | while read LINE
+#do
+#   python check_candidate.py "$LINE"
+#done
