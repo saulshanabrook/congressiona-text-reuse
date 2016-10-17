@@ -28,9 +28,11 @@ echo "[*] sorting"
 #python analyzer2.py  # make the candidates
 
 #echo "[*] finding jaccards"
-#rm "shingles.congress.candidates.jacs"
-#FILENAME="shingles.congress.candidates"
-#cat $FILENAME | while read LINE
-#do
-#   python check_candidate.py "$LINE"
-#done
+rm shingles.congress.candidates.jacs
+
+sort shingles.congress.candidates | uniq > t
+mv t shingles.congress.candidates
+
+cat shingles.congress.candidates | parallel python check_candidate.py {}
+
+
