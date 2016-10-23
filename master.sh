@@ -18,6 +18,13 @@ do
     find /data/bills/mdenny_copy_early2015/bills/POS_Tagged_Bills/ -type f -name '*.anno' | parallel --eta -j20 python shingling.py -doc {} -iter "$c"
 done
 
+
+python build_sketches.py
+rm supershingles.txt
+python supershingle.py $(find sketches -type f)
+
+LC_ALL=C sort -k2 -n -t"," supershingles.txt
+
 echo "[*] sorting"
 
 LC_ALL=C sort -k2 -n -t"," shingles.congress > shingles.congress.sorted
