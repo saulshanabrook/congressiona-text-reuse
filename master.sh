@@ -21,17 +21,19 @@ done
 
 python build_sketches.py
 rm supershingles.txt
-python supershingle.py $(find sketches -type f)
+find sketches -type f | parallel -j 4 python supershingle.py {}
 
-LC_ALL=C sort -k2 -n -t"," supershingles.txt
+LC_ALL=C sort -k2 -n -t"," supershingles.txt > supershingles.sorted
 
-echo "[*] sorting"
+py supershingle_reader.py | sort | uniq  | wc -l  # 14
+
+# echo "[*] sorting"
 
 LC_ALL=C sort -k2 -n -t"," shingles.congress > shingles.congress.sorted
 
 
 echo "[*] finding candidates"
-rm "shingles.congress.candidates"
+rm shingles.congress.candidates
 python analyzer2.py  # make the candidates
 
 echo "[*] finding jaccards"

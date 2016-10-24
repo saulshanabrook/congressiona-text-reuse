@@ -7,6 +7,7 @@ def shingle(doc, n):
 fn = sys.argv[1]
 
 with open(fn, "r") as inf:
+    print fn
     sketch = []
     for ln in inf:
         ln = ln.replace("\n", "")
