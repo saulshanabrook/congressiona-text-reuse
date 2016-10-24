@@ -6,7 +6,6 @@
 #THIS DOES NOT WORK W/O LC_ALL=C 
 #http://man7.org/linux/man-pages/man1/sort.1.html
 
-echo "fn,digit,window_no,window_size,iter" > "shingles.congress"
 
 echo "[*] shingling"
 

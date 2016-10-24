@@ -14,6 +14,15 @@ except OSError:
     print "could not find old candidates file to delete"
 
 
+def get_jac(fn1, fn2, window1, window2):
+    fn1 = fn1.replace("/", "#").replace(".anno", "")
+    fn2 = fn2.replace("/", "#").replace(".anno", "")
+    s1 = set([l.replace("\n", "").split(",")[1] for l in open("sketches/{}.anno_{}".format(fn1, window1))])
+    s2 = set([l.replace("\n", "").split(",")[1] for l in open("sketches/{}.anno_{}".format(fn2, window2))])
+    return len(s1.intersection(s2))
+
+
+
 def process_digit(current_list):
     '''find reasonable comparisons based on information from this digit'''
     candidates = []
@@ -32,11 +41,13 @@ def process_digit(current_list):
             c = Candidate(fn1=a.fn, fn2=b.fn, windowno1=a.windowno, windowno2=b.windowno)
             reasonable_candidates.append(c)
     for candidate in reasonable_candidates:
+        jac = get_jac(candidate.fn1, candidate.fn2,candidate.windowno1,candidate.windowno2)
         with open("shingles.congress.candidates", "a") as outf:
-            outf.write("{},{},{},{}\n".format(candidate.fn1,
+            outf.write("{},{},{},{},{}\n".format(candidate.fn1,
                                               candidate.fn2,
                                               candidate.windowno1,
-                                              candidate.windowno2))
+                                              candidate.windowno2,
+                                              jac))
 
 
 def find_candidates():
