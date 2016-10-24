@@ -13,9 +13,12 @@ def filter_file():
     with open(incomingfn, "r") as inf:
         for rw in inf:
             counter += 1
-            if counter % 1000 == 0:
+            if counter % 10000 == 0:
                 print counter
-            digit = digitgetter.search(rw).group(0)
+            try:
+                digit = digitgetter.search(rw).group(0)
+            except:
+                pass
             if digit != current_digit:
                 if len(current_list) > 1:
                     with open(incomingfn + ".filter", "a") as outf:
