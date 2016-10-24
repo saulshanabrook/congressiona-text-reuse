@@ -8,11 +8,6 @@ from collections import defaultdict
 D_i = collections.namedtuple('D_i', 'fn windowno')
 Candidate = collections.namedtuple('Candidate', 'fn1 windowno1 fn2 windowno2')
 
-try:
-    os.remove("shingles.congress.candidates")
-except OSError:
-    print "could not find old candidates file to delete"
-
 
 def get_jac(fn1, fn2, window1, window2):
     fn1 = fn1.replace("/", "#").replace(".anno", "")
@@ -26,6 +21,8 @@ def get_jac(fn1, fn2, window1, window2):
 def process_digit(current_list):
     '''find reasonable comparisons based on information from this digit'''
     candidates = []
+    if len(current_list) == 1:
+        return
 
     # all files for just one digit
     assert len(set([a.split(",")[1] for a in current_list])) < 2
@@ -49,21 +46,26 @@ def process_digit(current_list):
                                               candidate.windowno2,
                                               jac))
 
+import re
+digitgetter = re.compile("(?<=,)[0-9]+")
+
+incomingfn = "shingles.congress.sorted"
 
 def find_candidates():
     current_digit = None
     current_list = []
     counter = 0
-    with open("shingles.congress.sorted", "r") as inf:
+    with open(incomingfn, "r") as inf:
         for rw in inf:
             counter += 1
             if counter % 1000 == 0:
-                sys.stderr.write("{}\t".format(counter))
+                with open(incomingfn + ".log", "a") as outf:
+                    outf.write(incomingfn + "_" + str(counter) + "\n")
             biys = rw.replace("\n", "")
-            fn, digit, window, window_size, iter_ = biys.split(",")
+            digit = digitgetter.search(biys).group(0)
             if digit != current_digit:
                 process_digit(current_list)
-                current_list = []
+                current_list[:] = []
                 current_digit = digit
             current_list.append(biys)
     process_digit(current_list)
