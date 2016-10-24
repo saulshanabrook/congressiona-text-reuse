@@ -1,7 +1,7 @@
 '''
 2nd analyzer. uses filtered file
 '''
-import collections, ipdb, itertools, os, sys
+import collections, itertools, os, sys
 from collections import defaultdict
 
 # ye olde logical document
@@ -49,7 +49,7 @@ def process_digit(current_list):
 import re
 digitgetter = re.compile("(?<=,)[0-9]+")
 
-incomingfn = "shingles.congress.sorted"
+incomingfn = sys.argv[1]
 
 def find_candidates():
     current_digit = None
