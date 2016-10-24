@@ -18,7 +18,7 @@ def filter_file():
             try:
                 digit = digitgetter.search(rw).group(0)
             except:
-                pass
+                digit = ""
             if digit != current_digit:
                 if len(current_list) > 1:
                     with open(incomingfn + ".filter", "a") as outf:
