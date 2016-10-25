@@ -1,10 +1,16 @@
 '''simple script to cut shingles that only occur once'''
 
-import sys, re
+import sys, re, os
 
 digitgetter = re.compile("(?<=,)[0-9]+")
 
 incomingfn = sys.argv[1]
+
+try:
+    os.remove(incomingfn + ".filter")
+except:
+    pass
+
 
 def filter_file():
     current_digit = None

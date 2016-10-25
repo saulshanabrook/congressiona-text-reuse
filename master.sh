@@ -18,22 +18,21 @@ do
 done
 
 
-python build_sketches.py
-rm supershingles.txt
-find sketches -type f | parallel -j 4 python supershingle.py {}
-
-LC_ALL=C sort -k2 -n -t"," supershingles.txt > supershingles.sorted
-
-py supershingle_reader.py | sort | uniq  | wc -l  # 14
-
 # echo "[*] sorting"
-
 LC_ALL=C sort -k2 -n -t"," shingles.congress > shingles.congress.sorted
+py build_sketches.py shingles.congress.sorted
 
+# rm supershingles.txt
+# find sketches -type f | parallel -j 4 python supershingle.py {}
+# LC_ALL=C sort -k2 -n -t"," supershingles.txt > supershingles.sorted
+# py supershingle_reader.py | sort | uniq  | wc -l  # 14
 
+python reducer.py
 echo "[*] finding candidates"
 rm shingles.congress.candidates
 python analyzer2.py  # make the candidates
+
+./sketch_nums.sh sketches/demos_congress#hr_201.anno_4 sketches/demos_congress#hr_202.anno_4
 
 echo "[*] finding jaccards"
 rm shingles.congress.candidates.jacs
@@ -42,6 +41,6 @@ rm shingles.congress.candidates.jacs
 sort shingles.congress.candidates | uniq > t
 mv t shingles.congress.candidates
 
-cat shingles.congress.candidates | parallel python check_candidate.py {}
+# cat shingles.congress.candidates | parallel python check_candidate.py {}
 
 

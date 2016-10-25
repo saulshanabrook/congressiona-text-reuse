@@ -8,6 +8,6 @@ with open(sys.argv[1], "r") as inf:
         fn, min_digit, window_no, window_size, iter_no = ln.split(",")
         doc = fn.replace("/", "#") + "_" + window_no
         with open("sketches/" + doc, "a") as outf:
-            outf.write(ln + "\n")
+            outf.write(min_digit + "\n")
         if counter % 1000 == 0:
             print counter
