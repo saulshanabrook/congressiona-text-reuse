@@ -20,16 +20,18 @@ done
 
 # echo "[*] sorting"
 LC_ALL=C sort -k2 -n -t"," shingles.congress > shingles.congress.sorted
-python build_sketches.py shingles.congress.sorted
-
-# rm supershingles.txt
-# find sketches -type f | parallel -j 4 python supershingle.py {}
-# LC_ALL=C sort -k2 -n -t"," supershingles.txt > supershingles.sorted
-# py supershingle_reader.py | sort | uniq  | wc -l  # 14
-
-python reducer.py
-
+python reducer.py shingles.congress.sorted
+python build_sketches.py shingles.congress.sorted.filter
 awk -F, '{print >> ("pairs/"$2".csv"); close("pairs/"$2".csv")}' shingles.congress.sorted.filter
+
+
+rm shingles.congress.candidates
+find pairs -type f | parallel --eta -j 20 python pairs_que_maker.py {}
+cat shingles.congress.candidates | sort | uniq > shingles.congress.candidates.uniq
+
+rm pairs.txt
+cat shingles.congress.candidates.uniq | parallel --eta -j4 ./sketch_nums.sh {}
+
 
 # get the jaccard
 ./sketch_nums.sh sketches/demos_congress#hr_201.anno_4 sketches/demos_congress#hr_202.anno_4
