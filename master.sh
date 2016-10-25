@@ -28,10 +28,9 @@ py build_sketches.py shingles.congress.sorted
 # py supershingle_reader.py | sort | uniq  | wc -l  # 14
 
 python reducer.py
-echo "[*] finding candidates"
-rm shingles.congress.candidates
-python analyzer2.py  # make the candidates
+awk -F, '{print >> ("pairs/"$2".csv"); close("pairs/"$2".csv")}' shingles.congress.sorted.filter
 
+# get the jaccard
 ./sketch_nums.sh sketches/demos_congress#hr_201.anno_4 sketches/demos_congress#hr_202.anno_4
 
 echo "[*] finding jaccards"
