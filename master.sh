@@ -20,7 +20,7 @@ done
 
 # echo "[*] sorting"
 LC_ALL=C sort -k2 -n -t"," shingles.congress > shingles.congress.sorted
-py build_sketches.py shingles.congress.sorted
+python build_sketches.py shingles.congress.sorted
 
 # rm supershingles.txt
 # find sketches -type f | parallel -j 4 python supershingle.py {}
@@ -28,6 +28,7 @@ py build_sketches.py shingles.congress.sorted
 # py supershingle_reader.py | sort | uniq  | wc -l  # 14
 
 python reducer.py
+
 awk -F, '{print >> ("pairs/"$2".csv"); close("pairs/"$2".csv")}' shingles.congress.sorted.filter
 
 # get the jaccard
