@@ -11,8 +11,9 @@ def process_digit(current_list):
         two = b.split(",")[0].replace("/", "#")
         w1 = a.split(",")[2].replace("/", "#")
         w2 = b.split(",")[2].replace("/", "#")
-        with open("shingles.congress.candidates", "a") as outf:
-            outf.write("{},{},{}\n".format(sys.argv[1], "sketches/" + one + "_" + w1, "sketches/" + two + "_" + w2))
+        if one != two:
+            with open("shingles.congress.candidates", "a") as outf:
+                outf.write("{},{}\n".format("sketches/" + one + "_" + w1, "sketches/" + two + "_" + w2))
 
 with open(sys.argv[1], "r") as inf:
     for ln in inf:
