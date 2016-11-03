@@ -47,27 +47,36 @@ def build_corpus():
             data[fno] = {"date": dt.strftime("%Y-%m-%d"), "5-gms": set(ngrams)}
     return data
 
-data = build_corpus()
-V = vocab(data)
+def build_five_gram_doc_matrix():
+    data = build_corpus()
+    V = vocab(data)
 
-# 5-gm document matrix
-mx = np.zeros((len(V), len(data)))
+    # 5-gm document matrix
+    mx = np.zeros((len(V), len(data)))
 
-for doc, items in data.items():
-    for fgm in items["5-gms"]:
-        n = V[fgm]
-        mx[n][doc] = 1
+    for doc, items in data.items():
+        for fgm in items["5-gms"]:
+            n = V[fgm]
+            mx[n][doc] = 1
+    return mx
 
 def name_note(time, txt):
-    '''naming convention for nodes'''
+    '''
+    naming convention for nodes in the parent graph
+    convention = {time (i.e. rank in date ordering)}-{5gram number}
+    '''
     return "{}-{}".format(time, V[txt])
 
-# represents a sparse matrix. Each tuple (i,j) means 5-gm i is parent of j
-# you can imagine this as a big matrix: ndocs * |V| rows and cols
-parents = []
-for dno in range(2, len(data)):
-    for fvgrm in data[dno]['5-gms']:
-        if fvgrm in data[dno - 1]['5-gms']:
-            parents.append((name_note(dno - 1, fvgrm), name_note(dno, fvgrm)))
 
-print len(parents), len(V)
+def build_parent_graph():
+    # represents a sparse matrix. Each tuple (i,j) means 5-gm i is parent of j
+    # you can imagine this as a big matrix: ndocs * |V| rows and cols
+    data = build_corpus()
+    V = vocab(data)
+    parents = []
+    for dno in range(2, len(data)):
+        for fvgrm in data[dno]['5-gms']:
+            if fvgrm in data[dno - 1]['5-gms']:
+                parents.append((name_note(dno - 1, fvgrm), name_note(dno, fvgrm)))
+
+    return parents
