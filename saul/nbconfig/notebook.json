@@ -1,0 +1,11 @@
+{
+  "load_extensions": {
+    "toc2/main": true,
+    "limit_output/main": false,
+    "toggle_all_line_numbers/main": true,
+    "scratchpad/main": true,
+    "execute_time/ExecuteTime": true,
+    "notify/notify": true,
+    "init_cell/main": false
+  }
+}
