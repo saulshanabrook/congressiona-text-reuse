@@ -1,1 +1,0 @@
-csvcut -c 1 shingles.congress | sort | uniq | wc -l

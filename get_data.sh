@@ -1,1 +1,0 @@
-rsync -avzr ahandler@hobbes.cs.umass.edu:/data/bills/mdenny_copy_early2015/ mdenny_copy_early2015
