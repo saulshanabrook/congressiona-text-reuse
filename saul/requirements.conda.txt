@@ -1,0 +1,6 @@
+graphviz
+pymc3
+altair
+jupyter_contrib_nbextensions
+jupyter_nbextensions_configurator
+altair
