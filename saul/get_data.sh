@@ -1,6 +1,5 @@
 # This stuff is from Abe
 rsync -avz govtrack.us::govtrackdata/congress/113/bills govtrackdata
-rsync -avz govtrack.us::govtrackdata/congress/113/votes govtrackdata
 
 # find all votes files and bills files
 find . -name document.xml -type f > all.txt
