@@ -8,4 +8,5 @@ shingles.congress
 .DS_Store
 .cache/
 pairs/*
+saul/sections/*
 sketches/*
