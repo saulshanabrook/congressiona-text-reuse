@@ -18,6 +18,25 @@ def legislators():
     ]), ignore_index=True)
 
 
+def _transform_dict_items(d, join_string="_"):
+    """
+    Transforms the dictionary d to remove the values which
+    are dictionaries and add each key of that dictionary
+    as the original key appended with that key.
+    
+        _transform_dict_items({
+            "hi": 1,
+            "there": {"inner": 2}
+        }) === {"hi": 1, "there_inner": 2}
+    """
+    new_dict = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            for k2, v2 in v.items():
+                new_dict["{}{}{}".format(k, join_string, k2)] = v2
+        else:
+            new_dict[k] = v
+    return new_dict
 
 def votes(legislator_df):
     """
@@ -36,8 +55,9 @@ def votes(legislator_df):
     for vote_index, path in enumerate(tqdm.tqdm_notebook(_vote_paths())):
         with open(str(path)) as f:
             vote = json.load(f)
-            votes.append(vote)
-            for position, legislators in vote.pop("votes").items():
+            positions = vote.pop("votes")
+            votes.append(_transform_dict_items(vote))
+            for position, legislators in positions.items():
                 for legislator in legislators:
                     vote_positions.append({
                         "position": position,

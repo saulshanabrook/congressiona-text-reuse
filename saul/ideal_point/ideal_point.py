@@ -42,7 +42,7 @@ def transform_data(position_df, vote_df, legislator_df):
     # only include vote positions with y/n positions
     position_df = position_df[position_df["position"].isin(POSITIONS.keys())] \
     # and only for position with bills
-    position_df = position_df[list(vote_df.loc[position_df['vote_index']]['bill'].notnull())]
+    position_df = position_df[list(vote_df.loc[position_df['vote_index']]['bill_number'].notnull())]
 
     legislator_index = list(set(position_df['legislator_index']))
     vote_index = list(set(position_df['vote_index']))
@@ -100,16 +100,15 @@ def create_model(model_position_df):
 
     model = pm.Model()
     with model:
-        leg_pt = pm.Normal("leg_pt", shape=n_legislators)
-        a_0 = pm.Normal("a_0",  shape=n_votes)
-        a_1 = pm.Normal("a_1", shape=n_votes)
-        vote_pt = pm.Deterministic("vote_pt", -a_0 / a_1)
+        leg_ideology = pm.Normal("leg_ideology", shape=n_legislators)
+        vote_bias = pm.Normal("vote_bias",  shape=n_votes)
+        vote_ideology = pm.Normal("vote_ideology", shape=n_votes)
 
-        position_leg_pt = leg_pt[model_position_df["legislator"]]
-        position_a_0 = a_0[model_position_df["vote"]]
-        position_a_1 = a_1[model_position_df["vote"]]
+        position_leg_ideology = leg_ideology[model_position_df["legislator"]]
+        position_vote_bias = vote_bias[model_position_df["vote"]]
+        position_vote_ideology = vote_ideology[model_position_df["vote"]]
 
-        p_position_yes = pm.invlogit(position_a_0 + position_leg_pt * position_a_1)
+        p_position_yes = pm.invlogit(position_leg_ideology * position_vote_ideology + position_vote_bias)
         position = pm.Bernoulli("position", p_position_yes, observed=model_position_df['position'])
 
     return model
@@ -131,22 +130,23 @@ def load_advi_params():
         return pickle.load(f)
 
 
-def leg_add_ideal_pt(legislator_df, model_legislator_index, advi_params):
+def leg_add_ideology(legislator_df, model_legislator_index, advi_params):
     """
-    Adds the ideal points to the `legislators_df` and drops rows that don't
-    have points.
+    Adds the ideology to the `legislators_df` and drops rows that don't
+    have values.
     """
     return legislator_df.assign(
-        ideal_pt=pd.Series(advi_params.means['leg_pt'], index=model_legislator_index)
-    ).dropna(subset=['ideal_pt'])
+        ideology=pd.Series(advi_params.means['leg_ideology'], index=model_legislator_index)
+    ).dropna(subset=['ideology'])
 
 
-def vote_add_ideal_pt(vote_df, model_vote_index, advi_params):
+def vote_add_ideology_and_bias(vote_df, model_vote_index, advi_params):
     """
-    Adds the ideal points to the `votes_df` and drops rows that don't
-    have points.
+    Adds the ideology and spread to the `votes_df` and drops rows that don't
+    have values.
     """
     return vote_df.assign(
-        ideal_pt=pd.Series(-advi_params.means['a_0'] / advi_params.means['a_1'], index=model_vote_index)
-    ).dropna(subset=['ideal_pt'])
+        ideology=pd.Series(advi_params.means['vote_ideology'], index=model_vote_index),
+        bias=pd.Series(advi_params.means['vote_ideology'], index=model_vote_index)
+    ).dropna(subset=['ideology'])
 
