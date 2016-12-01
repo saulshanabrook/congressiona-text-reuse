@@ -41,10 +41,13 @@ with open("pairs_enhanced.txt", "r") as inf:
             billb = [b for b in bills if a.billno == bno and b.billtype==btype].pop()
             ideology_a = billa.ideology
             ideology_b = billb.ideology
+            with open("pairs_enhanced_again.txt", "a") as outf:
+                writer = csv.writer(outf)
+                writer.writerow(ln + [ideology_a, ideology_b])
         except IndexError:
             ideology_a = "unknown"
             ideology_b = "unknown"
+            with open("pairs_enhanced_again.txt", "a") as outf:
+                writer = csv.writer(outf)
+                writer.writerow(ln + [ideology_a, ideology_b])
         # print ideology_a, ideology_b
-        with open("pairs_enhanced_again.txt", "a") as outf:
-            writer = csv.writer(outf)
-            writer.writerow(ln + [ideology_a, ideology_b])
