@@ -147,6 +147,6 @@ def vote_add_ideology_and_bias(vote_df, model_vote_index, advi_params):
     """
     return vote_df.assign(
         ideology=pd.Series(advi_params.means['vote_ideology'], index=model_vote_index),
-        bias=pd.Series(advi_params.means['vote_ideology'], index=model_vote_index)
+        bias=pd.Series(advi_params.means['vote_bias'], index=model_vote_index)
     ).dropna(subset=['ideology'])
 
