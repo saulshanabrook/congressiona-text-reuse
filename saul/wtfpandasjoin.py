@@ -44,9 +44,7 @@ with open("pairs_enhanced.txt", "r") as inf:
         except IndexError:
             ideology_a = "unknown"
             ideology_b = "unknown"
-        print ideology_a, ideology_b
+        # print ideology_a, ideology_b
         with open("pairs_enhanced_again.txt", "a") as outf:
             writer = csv.writer(outf)
             writer.writerow(ln + [ideology_a, ideology_b])
-#print pairs[0]
-#print votept[0]
