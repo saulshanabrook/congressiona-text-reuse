@@ -14,8 +14,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+
 # PATHTOBILLS = "test_data/*anno"
-PATHTOBILLS = "sections/*anno"
+PATHTOBILLS = "govtrackdata/*/sections/*anno"
 NBILLS = sum(1 for f in glob.glob(PATHTOBILLS))
 
 # implementation of section 3.3 of http://infolab.stanford.edu/~ullman/mmds/ch3.pdf

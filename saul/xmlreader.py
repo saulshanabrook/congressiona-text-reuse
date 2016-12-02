@@ -21,3 +21,5 @@ for fno, fn in enumerate(open(congress + ".txt", "r")):
                 outf.write(section_text.encode("ascii", "ignore"))
     except xml.etree.ElementTree.ParseError:
         print "ERROR"
+    except KeyError:
+        print "ERROR"
