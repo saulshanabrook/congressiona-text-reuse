@@ -6,8 +6,7 @@ from stanford_corenlp_pywrapper import CoreNLP
 proc = CoreNLP("pos", corenlp_jars=["/Users/ahandler/stanford-corenlp-full-2015-04-20/*"])
 
 
-locs = ["sections/*"] #, "test_data/*txt", "/Users/ahandler/Downloads/BILLS-113-1-hr/*_*txt"]
-
+locs = ["govtrackdata/108/*", "govtrackdata/109/*", "govtrackdata/110/*", "govtrackdata/111/*",  "govtrackdata/112/*",  "govtrackdata/113/*"] 
 
 for loc in locs:
     for fn in glob.glob(loc):

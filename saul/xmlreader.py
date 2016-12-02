@@ -6,7 +6,7 @@ import glob
 
 congress = sys.argv[1]
 
-for fno, fn in enumerate(open(congress + ".all", "r")):
+for fno, fn in enumerate(open(congress + ".txt", "r")):
     fn = fn.replace("\n", "")
     if fno % 1000 == 0:
         print fno
