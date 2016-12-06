@@ -1,34 +1,24 @@
 import pandas as pd
 import numpy as np
 import ipdb
-from norm1d import normcdf
+from norm1d import *
 
 position = pd.DataFrame.from_csv("position.df")
 position = position[position["position"].str.contains("Aye|Nay")] # limit to Aye/Nay votes
-LEG = set(position["legislator_index"].unique())
-VOTES = set(position["vote_index"].unique())
-NLEG = len(LEG)
-NVOTES = len(VOTES)
+position['z'] = np.random.uniform(-1,1, position.shape[0]) # init some random utilites
 
-# print NLEG, NVOTES
+leg = pd.DataFrame(position["legislator_index"].unique(), columns=["legislator_index"])
+leg["theta"] = np.random.uniform(-1,1, leg.shape[0]) # init some random thetas
 
+bills = pd.DataFrame(position["vote_index"].unique(), columns=["vote_index"])
+bills["alpha"] = np.random.uniform(-1,1, bills.shape[0])
+bills["beta"] = np.random.uniform(-1,1, bills.shape[0]) 
+
+print bills.head()
 ## initalize
 
 PRIOR_VARIANCE = 1
 EMISSION_SCALAR = 1
-
-def get_matrixes():
-    out = np.zeros((NLEG, NVOTES))
-    for i in xrange(NLEG):
-        out[i] = np.asarray(np.random.normal(0,1,NVOTES))
-    return out
-
-leg_counter = {v:k for k,v in enumerate(LEG)}
-vote_counter = {v:k for k,v in enumerate(VOTES)}
-thetas = np.asarray(np.random.normal(0,1,NLEG))
-alphas = np.asarray(np.random.normal(0,1,NVOTES))
-betas = np.asarray(np.random.normal(0,1,NVOTES))
-Zs = get_matrixes()
 
 PRIOR_MEAN = np.zeros(2)
 THETA_PRIOR_MEAN = np.asarray([0])
@@ -41,50 +31,28 @@ def lookup_vote(legislator_index, vote_index):
     """
     Lookup vote
     """
+    print legislator_index, vote_index, type(legislator_index)
+    ipdb.set_trace()
     ix = position.query("legislator_index=={} & vote_index=={}".format(legislator_index, vote_index)).index[0]
-    if position["position"][ix] == "Nay":
+    return position["position"][ix]
+
+
+def draw_z(row):
+    """
+    """
+    try:
+        legislator_index = row["legislator_index"]
+        vote_index = row["vote_index"]
+    except KeyError:
         return 0
-    else:
-        return 1
-
-def voted_on(legislator_index):
-    """
-    Get all votes for justice, j
-    """
-    return position_df.query("legislator_index=={}".format(legislator_index))
-
-
-def alpha_for(vec_k):
-    out = np.zeros(len(vec_k))
-    for k in vec_k:
-        out[k] = alphas[k]
-    return out
-
-
-def betas_for(vec_k):
-    out = np.zeros(len(vec_k))
-    for k in vec_k:
-        out[k] = betas[k]
-    return out
-
-
-def draw_z(k, j):
-    """
-    draw a z for case k, justice j
-
-    eq. 9 from the paper 
-
-    TODO: omitting noise b/c they don't include noise
-    """
-    vote = lookup_vote(k, j)
-    mean = alphas[k] + (betas[k] * thetas[j])
-    #print mean, vote
+    mean =  0 # bills[ ] alphas[vote_counter[vote_index]] + (betas[vote_counter[vote_index]] * thetas[leg_counter[legislator_index]])
     assert vote in [0, 1]
     standard_deviation = 1
-    if vote == 1:
+    if row["position"] == "Aye" == "Aye":
         return truncnormal(mean, standard_deviation, 0, 100)
-    elif vote == 0:
+    elif row["position"] == "Aye" == "Nay":
         return truncnormal(mean, standard_deviation, -100, 0)
+    assert "do not" == "get to here"
 
 def draw_ab(k, thetas_, Zs_, jk):
     """
@@ -116,10 +84,14 @@ def draw_ab(k, thetas_, Zs_, jk):
 def draw_theta(j):
     """
     Draw a theta
-
     """
-    ab = np.asarray([(alphas[i], betas[i]) for i in voted_on(j)])
-    z = np.asarray([Zs[j][k] for k in voted_on(j)])
+    #ab = np.asarray([(alphas[i], betas[i]) for i in voted_on(j)])
+    #z = np.asarray([Zs[j][k] for k in voted_on(j)])
+    try:
+        votedon = position.query("legislator_index=={}".format(j["legislator_index"]))
+    except KeyError:
+        return 0
+    ipdb.set_trace()
     for iit in voted_on(j):
         zz = Zs[j][k]
         if zz == 0.0:
@@ -127,12 +99,7 @@ def draw_theta(j):
     vw, v0 = linreg_post(ab, z, np.zeros(ab.shape[1]), 1, 1)
     out = np.random.multivariate_normal(vw, v0)
     return out[1]
-    #out = np.random.normal(vw, v0)
-    #return out
 
-def resample_theta():
-    for j_ix, theta in enumerate(thetas):
-        thetas[j_ix] = draw_theta(j_ix)
 
 def resample_alphabeta():
     for k_ix in range(len(alphas)):
@@ -143,21 +110,10 @@ def resample_alphabeta():
         betas[k_ix] = b
 
 
-def resample_Z():
-    for j, zl in enumerate(Zs):
-        for k, z in enumerate(zl):
-            assert j < Njus
-            try:
-                Zs[j][k] = draw_z(k, j)
-            except AssertionError:
-                #print "s"
-                Zs[j][k] = 0 # pass
-
-
 def ll_simple():
     sump = 0
     for index, row in position.iterrows():
-        if index % 1000 == 0:
+        if index % 10000 == 0:
             print index
         ak = alphas[vote_counter[row["vote_index"]]]
         bk = betas[vote_counter[row["vote_index"]]]
@@ -175,19 +131,25 @@ def sampler():
     ## Run the sampler and save a copy of the variables at each iteration.
     samples = []
     for siter in xrange(1000):
-        print siter
-        ll = ll_simple()
-        print ll
-        resample_Z()
+        print "iter", siter
+        print position["z"].sum()
+        position["z"] = position.apply(draw_z)
+        print position["z"].head()
+        # TODO delete
+        #for index, row in position.iterrows():
+        #    position.set_value(row["legislator_index"], row["vote_index"], draw_z(row["legislator_index"], row["vote_index"]))
         print "resampled z"
-        resample_theta()
+        leg["theta"] = leg.apply(draw_theta)
         print "resampled theta"
         resample_alphabeta()
         print "resampled AB"
         samples.append({'theta':thetas.copy(), 'll': ll, 'alpha':alphas.copy(), 'beta':betas.copy()})
+        print "calc ll"
+        ll = ll_simple()
+        print ll
     import pickle as pickle
     pickle.dump(samples, open("samples.p", "w"))
-    ## Not saving Z since it can take a lot of memory.  1000 iters is ok, but 10000 iters is >1 GB (since it takes up 10000*Njus*Ncase*8 or so bytes.)
 
 
-sampler()
+draw_z(position.iloc[[0]])
+# sampler()
