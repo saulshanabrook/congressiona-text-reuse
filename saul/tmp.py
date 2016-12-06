@@ -40,19 +40,23 @@ def lookup_vote(legislator_index, vote_index):
 def draw_z(row):
     """
     """
+    ipdb.set_trace()
     try:
         legislator_index = row["legislator_index"]
         vote_index = row["vote_index"]
     except KeyError:
         return 0
-    mean =  0 # bills[ ] alphas[vote_counter[vote_index]] + (betas[vote_counter[vote_index]] * thetas[leg_counter[legislator_index]])
-    assert vote in [0, 1]
+    billinfo = row.merge(bills, on=("vote_index"))
+    leginfo = row.merge(leg, on=("legislator_index"))
+    assert len(billinfo.index) == 1
+    assert len(leginfo.index) == 1
+    mean =  billinfo.loc[0]["alpha"] + billinfo.loc[0]["beta"] * leginfo.loc[0]["theta"]
     standard_deviation = 1
-    if row["position"] == "Aye" == "Aye":
+    if row.loc[row.index.values[0]]["position"] == "Aye":
         return truncnormal(mean, standard_deviation, 0, 100)
-    elif row["position"] == "Aye" == "Nay":
+    elif row.loc[row.index.values[0]]["position"] == "Nay":
         return truncnormal(mean, standard_deviation, -100, 0)
-    assert "do not" == "get to here"
+        assert "do not" == "get to here"
 
 def draw_ab(k, thetas_, Zs_, jk):
     """
@@ -87,6 +91,7 @@ def draw_theta(j):
     """
     #ab = np.asarray([(alphas[i], betas[i]) for i in voted_on(j)])
     #z = np.asarray([Zs[j][k] for k in voted_on(j)])
+    ipdb.set_trace()
     try:
         votedon = position.query("legislator_index=={}".format(j["legislator_index"]))
     except KeyError:
@@ -128,16 +133,16 @@ def ll_simple():
     
 
 def sampler():
-    ## Run the sampler and save a copy of the variables at each iteration.
+    '''run sampler'''
     samples = []
     for siter in xrange(1000):
         print "iter", siter
         print position["z"].sum()
-        position["z"] = position.apply(draw_z)
-        print position["z"].head()
         # TODO delete
-        #for index, row in position.iterrows():
-        #    position.set_value(row["legislator_index"], row["vote_index"], draw_z(row["legislator_index"], row["vote_index"]))
+        # position["t"] = position.apply(draw_z) THIS DOES NOT WORK. 
+        for index, row in position.iterrows():
+            position.set_value(row["legislator_index"], row["vote_index"], draw_z(row))
+            print position["z"].sum()
         print "resampled z"
         leg["theta"] = leg.apply(draw_theta)
         print "resampled theta"
@@ -150,6 +155,9 @@ def sampler():
     import pickle as pickle
     pickle.dump(samples, open("samples.p", "w"))
 
+def test():
+    '''debugger method'''
+    print draw_z(position.iloc[[0]])
 
-draw_z(position.iloc[[0]])
-# sampler()
+# test()
+sampler()
