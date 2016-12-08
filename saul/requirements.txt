@@ -7,3 +7,4 @@ datasketch
 #jupyterlab
 #git+https://github.com/dask/dask-labextension.git
 jupyter_contrib_nbextensions
+tqdm

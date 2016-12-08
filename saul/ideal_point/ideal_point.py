@@ -100,7 +100,7 @@ def create_model(model_position_df):
 
     model = pm.Model()
     with model:
-        leg_ideology = pm.Normal("leg_ideology", shape=n_legislators)
+        leg_ideology = pm.Normal("legislator_ideology", shape=n_legislators)
         vote_bias = pm.Normal("vote_bias",  shape=n_votes)
         vote_ideology = pm.Normal("vote_ideology", shape=n_votes)
 
@@ -136,7 +136,7 @@ def leg_add_ideology(legislator_df, model_legislator_index, advi_params):
     have values.
     """
     return legislator_df.assign(
-        ideology=pd.Series(advi_params.means['leg_ideology'], index=model_legislator_index)
+        ideology=pd.Series(advi_params.means['legislator_ideology'], index=model_legislator_index)
     ).dropna(subset=['ideology'])
 
 
