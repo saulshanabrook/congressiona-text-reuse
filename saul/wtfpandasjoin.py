@@ -20,15 +20,19 @@ try:
 except OSError:
     print "could not find"
 
-with open("vote_pt_df.csv", "r") as inf:
+with open("votes_merged.csv", "r") as inf:
     reader = csv.reader(inf)
     next(reader, None) # skip header
     for ln in reader:
-        congress = ln[5]
-        number = int(float(ln[6]))
-        btype = ln[8]
-        ideology = ln[28]
-        bills.append(Bill(number, btype, congress, ideology))
+        print ln
+        congress = ln[1]
+        number = int(float(ln[2]))
+        btype = ln[3]
+        ideology = ln[4]
+        bill = Bill(number, btype, congress, ideology)
+        print bill
+        bills.append(bill)
+
 
 with open("pairs_enhanced.txt", "r") as inf:
     reader = csv.reader(inf)
@@ -50,4 +54,3 @@ with open("pairs_enhanced.txt", "r") as inf:
             with open("pairs_enhanced_again.txt", "a") as outf:
                 writer = csv.writer(outf)
                 writer.writerow(ln + [ideology_a, ideology_b])
-        # print ideology_a, ideology_b
