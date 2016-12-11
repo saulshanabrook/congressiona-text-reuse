@@ -2,6 +2,8 @@ import pandas as pd
 import pymc3 as pm
 import pickle
 
+from .utils import normal_cdf
+
 
 def transform_data(position_df, vote_df, legislator_df):
     """
@@ -89,64 +91,32 @@ def test_data(n_legislators):
     })
 
 
-def create_model(model_position_df):
-    """
-    Creates a PyMC3 Model for ideal point estimation
-    using the IDEAL method based on
-    "Comparing NOMINATE and IDEAL: Points of Difference and Monte Carlo Tests"
-    """
-    n_legislators = model_position_df['legislator'].nunique()
-    n_votes = model_position_df['vote'].nunique()
+def save_params(params):
+    with open('params.pickle', 'wb') as f:
+        pickle.dump(params, f)
 
-    model = pm.Model()
-    with model:
-        leg_ideology = pm.Normal("legislator_ideology", shape=n_legislators)
-        vote_bias = pm.Normal("vote_bias",  shape=n_votes)
-        vote_ideology = pm.Normal("vote_ideology", shape=n_votes)
-
-        position_leg_ideology = leg_ideology[model_position_df["legislator"]]
-        position_vote_bias = vote_bias[model_position_df["vote"]]
-        position_vote_ideology = vote_ideology[model_position_df["vote"]]
-
-        p_position_yes = pm.invlogit(position_leg_ideology * position_vote_ideology + position_vote_bias)
-        position = pm.Bernoulli("position", p_position_yes, observed=model_position_df['position'])
-
-    return model
-
-
-def advi_params(model):
-    """
-    Estimate the parameters for the model, returns `advi_params`.
-    """
-    with model:
-        return pm.variational.advi(n=25000)
-
-def save_advi_params(advi_params):
-    with open('advi_params.pickle', 'wb') as f:
-        pickle.dump(advi_params, f)
-
-def load_advi_params():
-    with open('advi_params.pickle', 'rb') as f:
+def load_params():
+    with open('params.pickle', 'rb') as f:
         return pickle.load(f)
 
 
-def leg_add_ideology(legislator_df, model_legislator_index, advi_params):
+def leg_add_ideology(legislator_df, model_legislator_index, params):
     """
     Adds the ideology to the `legislators_df` and drops rows that don't
     have values.
     """
     return legislator_df.assign(
-        ideology=pd.Series(advi_params.means['legislator_ideology'], index=model_legislator_index)
+        ideology=pd.Series(params['legislator_ideologies'], index=model_legislator_index)
     ).dropna(subset=['ideology'])
 
 
-def vote_add_ideology_and_bias(vote_df, model_vote_index, advi_params):
+def vote_add_ideology_and_bias(vote_df, model_vote_index, params):
     """
     Adds the ideology and spread to the `votes_df` and drops rows that don't
     have values.
     """
     return vote_df.assign(
-        ideology=pd.Series(advi_params.means['vote_ideology'], index=model_vote_index),
-        bias=pd.Series(advi_params.means['vote_bias'], index=model_vote_index)
+        ideology=pd.Series(params['vote_ideologies'], index=model_vote_index),
+        bias=pd.Series(params['vote_biases'], index=model_vote_index)
     ).dropna(subset=['ideology'])
 
