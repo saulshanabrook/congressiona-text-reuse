@@ -2,8 +2,6 @@ import pandas as pd
 import pymc3 as pm
 import pickle
 
-from .utils import normal_cdf
-
 
 def transform_data(position_df, vote_df, legislator_df):
     """

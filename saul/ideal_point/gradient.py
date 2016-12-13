@@ -55,34 +55,51 @@ class Gradient():
         = sum_positions log Bernouli(logistic(legislator_ideology * vote_ideology + vote_bias))
         """
         p = logistic(self.legislator_ideology * self.vote_ideology + self.vote_bias)
-        
+        # _(p)
         # p if position, 1 - p if not position
-        actual_p = np.where(self.position, p, (1 - p))
+        actual_p = np.where(self.position, p, 1 - p)
+        # _(actual_p)
+        # _(np.log(actual_p).sum())
         return np.log(actual_p).sum()
 
-    def descend(self):
-        alpha = 0.001
-
+    def descend(self, alpha=0.003):
         self.compute_rows()
         exp = np.exp(self.legislator_ideology * self.vote_ideology + self.vote_bias)
+        # _(exp)
         exp_div = 1 / (exp + 1)
+        # _(exp_div)
         position_neg = np.where(self.position, 0, -1)  
+        # _(position_neg)
 
         deriv_legislator_ideology = self.vote_ideology * exp_div + position_neg * self.vote_ideology
+        # _(deriv_legislator_ideology)
 
         deriv_vote_ideology = self.legislator_ideology * exp_div + position_neg * self.legislator_ideology
+        # _(deriv_vote_ideology)
         deriv_vote_bias = exp_div + position_neg
-
+        # _(deriv_vote_bias)
         for (i, mask) in enumerate(self.vote_mask):
             self.params['vote_ideologies'][i] += alpha * deriv_vote_ideology[mask].sum()
             self.params['vote_biases'][i] += alpha * deriv_vote_bias[mask].sum()
+        # _(self.params['vote_ideologies'])
+        # _(self.params['vote_biases'])
 
         for (i, mask) in enumerate(self.legislator_mask):
             self.params['legislator_ideologies'][i] += alpha *  deriv_legislator_ideology[mask].sum()
- 
+        # _(self.params['legislator_ideologies'])
+
     def run(self, n=10):
         self.compute_rows()
+        ll = self.log_likelihood()
         for i in tqdm_notebook(list(range(n))):
+            new_ll = self.log_likelihood()
+            if new_ll < ll:
+                break
+            ll = new_ll
             if i % 1 == 0:
                 tqdm.write(str(self.log_likelihood()))
             self.descend()
+
+def _(a):
+    if np.any(np.isinf(a)):
+        raise Exception()
