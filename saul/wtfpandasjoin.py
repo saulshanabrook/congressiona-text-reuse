@@ -1,9 +1,13 @@
 '''
-la la la i hate pandas (hitting error on join)
+this script takes pairs_enhanced.txt from bills_sensemaker.py from the ulman dupefinder
+
+it adds ideologies to bills
 '''
 
 import collections
 import csv, ipdb, os
+import ipdb
+import json
 
 Bill = collections.namedtuple('Bill', 'billno billtype congress ideology')
 
@@ -25,7 +29,7 @@ with open("votes_merged.csv", "r") as inf:
     next(reader, None) # skip header
     for ln in reader:
         print ln
-        congress = ln[1]
+        congress = int(ln[1])
         number = int(float(ln[2]))
         btype = ln[3]
         ideology = ln[4]
@@ -39,10 +43,13 @@ with open("pairs_enhanced.txt", "r") as inf:
     next(reader, None) # skip header
     for ln in reader:
         try:
-            ano, atype, acongress = int(ln[2]), ln[3], ln[4]
-            bno, btype, bcongress = int(ln[9]), ln[10], ln[11]
+            # ipdb.set_trace()
+            adt = json.loads(ln[2])
+            ano, atype, acongress = int(adt["billno"]), adt["billkind"], int(adt["congress"])
+            bdt = json.loads(ln[7])
+            bno, btype, bcongress = int(bdt["billno"]), bdt["billkind"], int(bdt["congress"])
             billa = [a for a in bills if a.billno == ano and a.billtype==atype].pop()
-            billb = [b for b in bills if a.billno == bno and b.billtype==btype].pop()
+            billb = [b for b in bills if b.billno == bno and b.billtype==btype].pop()
             ideology_a = billa.ideology
             ideology_b = billb.ideology
             with open("pairs_enhanced_again.txt", "a") as outf:
@@ -54,3 +61,5 @@ with open("pairs_enhanced.txt", "r") as inf:
             with open("pairs_enhanced_again.txt", "a") as outf:
                 writer = csv.writer(outf)
                 writer.writerow(ln + [ideology_a, ideology_b])
+        except ValueError:
+            ipdb.set_trace()
