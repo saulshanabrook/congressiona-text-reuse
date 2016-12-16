@@ -42,7 +42,7 @@ def transform_data(position_df, vote_df, legislator_df):
     # only include vote positions with y/n positions
     position_df = position_df[position_df["position"].isin(POSITIONS.keys())] \
     # and only for position with bills
-    position_df = position_df[list(vote_df.loc[position_df['vote_index']]['bill_number'].notnull())]
+    position_df = position_df[list(vote_df.loc[position_df['vote_index']]['bill_index'].notnull())]
 
     legislator_index = list(set(position_df['legislator_index']))
     vote_index = list(set(position_df['vote_index']))

@@ -9,6 +9,7 @@ Download all vote data and legislator data:
 
 ```bash
 rsync -avzR --delete --delete-excluded --exclude "*/data.xml"  govtrack.us::govtrackdata/congress/113/votes/ govtrackdata/
+rsync -avzR --delete --delete-excluded --exclude "*/*.html" --exclude "*/*.xml" govtrack.us::govtrackdata/congress/113/bills/ govtrackdata/
 
 rsync -avzR --delete --delete-excluded --exclude "*.yaml" --exclude "*/committee*"   govtrack.us::govtrackdata/congress-legislators/ govtrackdata/
 ```

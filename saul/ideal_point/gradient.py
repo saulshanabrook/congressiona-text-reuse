@@ -91,7 +91,7 @@ class Gradient():
     def run(self, n=10):
         self.compute_rows()
         ll = self.log_likelihood()
-        for i in tqdm_notebook(list(range(n))):
+        for i in tqdm_notebook(list(range(n)), desc="gradient"):
             new_ll = self.log_likelihood()
             if new_ll < ll:
                 break
