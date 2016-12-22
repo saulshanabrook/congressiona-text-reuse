@@ -14,8 +14,8 @@ def legislators():
     """
 
     return pd.concat(map(pd.read_csv, [
-        "govtrackdata/congress-legislators/legislators-current.csv",
-        "govtrackdata/congress-legislators/legislators-historic.csv"
+        "../govtrackdata/congress-legislators/legislators-current.csv",
+        "../govtrackdata/congress-legislators/legislators-historic.csv"
     ]), ignore_index=True)
 
 
@@ -77,7 +77,7 @@ def bills(legislator_df):
 
 
 def _bill_paths():
-    return list(pathlib.Path("./govtrackdata/").glob("congress/*/bills/*/*/data.json"))
+    return list(pathlib.Path("../govtrackdata/").glob("congress/*/bills/*/*/data.json"))
 
 def votes(legislator_df, bill_df):
     """
@@ -114,7 +114,7 @@ def votes(legislator_df, bill_df):
 
 
 def _vote_paths():
-  return list(pathlib.Path("./govtrackdata/").glob("congress/*/votes/**/data.json"))
+  return list(pathlib.Path("../govtrackdata/").glob("congress/*/votes/**/data.json"))
 
 
 def _build_legislator_name_to_index(legislator_df):

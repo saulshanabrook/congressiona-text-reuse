@@ -2,8 +2,15 @@ version: '2'
 services:
   app:
     build: .
+    # working_dir: /code/notebooks
     volumes:
-      - .:/code/
+      - ./src:/code/src
+      - ./bin:/code/bin
+      - ./notebooks:/code/notebooks
+      - ./outputdata:/code/outputdata
       - ./nbconfig:/home/jovyan/.jupyter/nbconfig/
     ports:
       - 8888:8888
+    environment:
+      - PYTHONPATH=/code/src/
+      - PASSWORD=password

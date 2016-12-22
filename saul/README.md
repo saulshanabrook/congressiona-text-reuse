@@ -23,9 +23,16 @@ docker-compose up --build
 
 ## Usage
 
-Check out `ideal point.ipynb` for example usage
+Check out `./notebooks/ideal point.ipynb` for example usage
 
 
 ```bash
 open 'http://localhost:8888/notebooks/ideal%20point.ipynb'
 ```
+
+
+## Directory Structure
+
+We don't want to mount `govtrackdata` as a volume in the Docker container, because this causes much slower file IO 
+when using Docker for Mac. So instead, we include this data
+in our container, and put all editable files in subdirectories, so we can mount them in volumes in the container.

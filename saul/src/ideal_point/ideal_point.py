@@ -90,11 +90,11 @@ def test_data(n_legislators):
 
 
 def save_params(params):
-    with open('params.pickle', 'wb') as f:
+    with open('../outputdata/params.pickle', 'wb') as f:
         pickle.dump(params, f)
 
 def load_params():
-    with open('params.pickle', 'rb') as f:
+    with open('../outputdata/params.pickle', 'rb') as f:
         return pickle.load(f)
 
 
