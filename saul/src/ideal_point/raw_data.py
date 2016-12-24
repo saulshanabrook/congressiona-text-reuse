@@ -114,7 +114,7 @@ def votes(legislator_df, bill_df):
 
 
 def _vote_paths():
-  return list(pathlib.Path("../govtrackdata/").glob("congress/*/votes/**/data.json"))
+    return list(pathlib.Path("../govtrackdata/").glob("congress/*/votes/**/data.json"))
 
 
 def _build_legislator_name_to_index(legislator_df):
